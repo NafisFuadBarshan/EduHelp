@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}My Courses · EduHelp{% endblock %}
+{% block content %}
+<section class="page">
+  <h1>My Courses</h1>
+  {% if enrollments %}
+    <div class="grid">
+      {% for enrollment in enrollments %}
+        <article class="card">
+          <h3><a href="{{ enrollment.course.get_absolute_url }}">{{ enrollment.course.title }}</a></h3>
+          <p class="card__meta">Taught by {{ enrollment.course.teacher.get_full_name|default:enrollment.course.teacher.username }}</p>
+          <div class="card__foot">
+            <span>Enrolled {{ enrollment.enrolled_at|date:"j M Y" }}</span>
+            <a class="btn btn--small" href="{{ enrollment.course.get_absolute_url }}">Open</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p class="empty">You have not enrolled in any course yet. <a href="{% url 'courses:list' %}">Browse the catalog</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

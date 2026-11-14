@@ -1,0 +1,45 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}EduHelp{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/eduhelp.css' %}">
+</head>
+<body>
+  <header class="topbar">
+    <nav class="topbar__inner" aria-label="Main">
+      <div class="topbar__links">
+        <a href="{% url 'courses:home' %}" class="topbar__home">
+          <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 3.5C2 2.7 2.7 2 3.5 2H13v11H3.5A1.5 1.5 0 0 0 2 14.5v-11Zm1.5 9.5H12V3.5H3.5V13Z" fill="currentColor"/></svg>
+          Home
+        </a>
+        <a href="{% url 'courses:list' %}">Buy Courses</a>
+        {% if user.is_authenticated %}<a href="{% url 'courses:dashboard' %}">{% if user.is_teacher %}Teach{% elif user.is_staff %}Admin{% else %}My Courses{% endif %}</a>{% endif %}
+      </div>
+      <div class="topbar__actions">
+        {% if user.is_authenticated %}
+          <span class="topbar__user">{{ user.username }}</span>
+          <form method="post" action="{% url 'accounts:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="chip">Logout</button>
+          </form>
+        {% else %}
+          <a class="chip" href="{% url 'accounts:register' %}">Register User</a>
+          <a class="chip" href="{% url 'accounts:login' %}">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+
+  {% if messages %}
+  <div class="messages" role="status">
+    {% for message in messages %}<p class="message message--{{ message.tags }}">{{ message }}</p>{% endfor %}
+  </div>
+  {% endif %}
+
+  <main>{% block content %}{% endblock %}</main>
+
+  <footer class="footer"><p>EduHelp: courses, enrollment and teacher support in one place.</p></footer>
+</body>
+</html>

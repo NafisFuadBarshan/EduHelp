@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ course.title }} · EduHelp{% endblock %}
+{% block content %}
+<section class="page detail">
+  <div class="detail__main">
+    <h1>{{ course.title }}</h1>
+    <p class="card__meta">Taught by {{ course.teacher.get_full_name|default:course.teacher.username }} · {{ lesson_count }} lesson{{ lesson_count|pluralize }}</p>
+    {% if not course.is_approved %}<p class="message message--warning">Waiting for admin approval. Only you and admins can see this page.</p>{% endif %}
+    <p class="lead">{{ course.description|linebreaksbr }}</p>
+
+    {% if has_access %}
+      <h2 class="section-title">Lessons</h2>
+      {% for lesson in lessons %}
+        <details class="lesson" {% if forloop.first %}open{% endif %}>
+          <summary>{{ lesson.order }}. {{ lesson.title }}</summary>
+          {% if lesson.content %}<div class="lesson__body">{{ lesson.content|linebreaks }}</div>{% endif %}
+          {% if lesson.video_url %}<p><a href="{{ lesson.video_url }}" target="_blank" rel="noopener noreferrer">Watch the video</a></p>{% endif %}
+        </details>
+      {% empty %}
+        <p class="empty">The teacher has not added lessons yet.</p>
+      {% endfor %}
+
+      <h2 class="section-title">Questions and answers</h2>
+      {% if question_form %}
+        <form method="post" action="{% url 'courses:ask' course.pk %}" class="form form--inline">
+          {% csrf_token %}
+          {{ question_form.text.label_tag }}
+          {{ question_form.text }}
+          <button type="submit" class="btn btn--small">Send question</button>
+        </form>
+      {% endif %}
+      {% for q in questions %}
+        <div class="qa">
+          <p><strong>{{ q.student.username }}</strong> asked: {{ q.text }}</p>
+          {% if q.answer %}<p class="qa__answer"><strong>Teacher:</strong> {{ q.answer }}</p>{% else %}<p class="qa__pending">No answer yet.</p>{% endif %}
+        </div>
+      {% empty %}
+        <p class="empty">No questions yet.</p>
+      {% endfor %}
+    {% else %}
+      <p class="empty">Enroll to see the lessons and ask the teacher questions.</p>
+    {% endif %}
+  </div>
+
+  <aside class="detail__side">
+    <p class="price">{% if course.is_free %}Free{% else %}{{ CURRENCY }}{{ course.price }}{% endif %}</p>
+    {% if is_owner %}
+      <a class="btn" href="{% url 'courses:manage' course.pk %}">Manage course</a>
+    {% elif enrolled %}
+      <span class="badge badge--ok">You are enrolled</span>
+    {% elif not user.is_authenticated %}
+      <a class="btn" href="{% url 'accounts:login' %}?next={{ request.path }}">Login to enroll</a>
+    {% elif user.is_student and course.is_approved %}
+      <form method="post" action="{% url 'courses:enroll' course.pk %}">
+        {% csrf_token %}
+        <button type="submit" class="btn">{% if course.is_free %}Enroll for free{% else %}Buy this course{% endif %}</button>
+      </form>
+    {% endif %}
+  </aside>
+</section>
+{% endblock %}

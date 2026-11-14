@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}EduHelp: Your Gateway to Learning and Skill Development{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Welcome to EduHelp</h1>
+  <p>Your Gateway to Learning and Skill Development</p>
+  {% if user.is_authenticated %}
+    <a class="btn" href="{% url 'courses:dashboard' %}">Go to dashboard</a>
+  {% else %}
+    <a class="btn" href="{% url 'accounts:login' %}">Login</a>
+  {% endif %}
+</section>
+
+<section class="about">
+  <h2>About EduHelp</h2>
+  <p>EduHelp is a platform designed to provide top-notch courses taught by industry experts. Start your learning journey with us today!</p>
+</section>
+
+{% if featured %}
+<section class="page">
+  <h2 class="section-title">Latest courses</h2>
+  <div class="grid">
+    {% for course in featured %}{% include "courses/_course_card.html" %}{% endfor %}
+  </div>
+  <p class="more"><a href="{% url 'courses:list' %}">Browse all courses</a></p>
+</section>
+{% endif %}
+{% endblock %}

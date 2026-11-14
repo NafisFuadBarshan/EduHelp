@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}{{ heading }} · EduHelp{% endblock %}
+{% block content %}
+<section class="page page--narrow">
+  <h1>{{ heading }}</h1>
+  <p class="card__meta">Course: {{ course.title }}</p>
+  <form method="post" class="form">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {{ field }}
+        {% if field.help_text %}<div class="help">{{ field.help_text }}</div>{% endif %}
+        {% for error in field.errors %}<p class="error">{{ error }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="btn">Save lesson</button>
+    <a class="alt-link" href="{% url 'courses:manage' course.pk %}">Cancel</a>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Teach · EduHelp{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="row">
+    <h1>Your courses</h1>
+    <a class="btn btn--small" href="{% url 'courses:create' %}">New course</a>
+  </div>
+  {% if pending %}<p class="message message--info">{{ pending }} student question{{ pending|pluralize }} waiting for your answer.</p>{% endif %}
+  {% if courses %}
+    <table class="table">
+      <thead><tr><th>Course</th><th>Price</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+      {% for course in courses %}
+        <tr>
+          <td>{{ course.title }}</td>
+          <td>{% if course.is_free %}Free{% else %}{{ CURRENCY }}{{ course.price }}{% endif %}</td>
+          <td>{% if course.is_approved %}<span class="badge badge--ok">Live</span>{% else %}<span class="badge badge--wait">Awaiting approval</span>{% endif %}</td>
+          <td><a href="{% url 'courses:manage' course.pk %}">Manage</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">You have not created a course yet. <a href="{% url 'courses:create' %}">Create your first course</a>.</p>
+  {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Buy Courses · EduHelp{% endblock %}
+{% block content %}
+<section class="page">
+  <h1>Buy Courses</h1>
+  <form method="get" class="search">
+    <label for="q" class="sr-only">Search courses</label>
+    <input id="q" type="search" name="q" value="{{ query }}" placeholder="Search by title or topic">
+    <button type="submit" class="btn btn--small">Search</button>
+  </form>
+  {% if courses %}
+    <div class="grid">
+      {% for course in courses %}{% include "courses/_course_card.html" %}{% endfor %}
+    </div>
+  {% else %}
+    <p class="empty">{% if query %}No courses match “{{ query }}”. Try a different word.{% else %}No courses are available yet. Check back soon.{% endif %}</p>
+  {% endif %}
+</section>
+{% endblock %}

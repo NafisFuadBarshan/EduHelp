@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Manage {{ course.title }} · EduHelp{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="row">
+    <h1>{{ course.title }}</h1>
+    <div class="row__actions">
+      <a class="btn btn--small btn--ghost" href="{% url 'courses:update' course.pk %}">Edit details</a>
+      <a class="btn btn--small btn--danger" href="{% url 'courses:delete' course.pk %}">Delete</a>
+    </div>
+  </div>
+  <p class="card__meta">
+    {% if course.is_approved %}<span class="badge badge--ok">Live in the catalog</span>{% else %}<span class="badge badge--wait">Awaiting admin approval</span>{% endif %}
+    {{ student_count }} student{{ student_count|pluralize }} enrolled
+    · <a href="{{ course.get_absolute_url }}">View as student</a>
+  </p>
+
+  <div class="row">
+    <h2 class="section-title">Lessons</h2>
+    <a class="btn btn--small" href="{% url 'courses:lesson_create' course.pk %}">Add lesson</a>
+  </div>
+  {% if lessons %}
+    <table class="table">
+      <tbody>
+      {% for lesson in lessons %}
+        <tr>
+          <td class="narrow">{{ lesson.order }}</td>
+          <td>{{ lesson.title }}</td>
+          <td class="right"><a href="{% url 'courses:lesson_update' lesson.pk %}">Edit</a> · <a href="{% url 'courses:lesson_delete' lesson.pk %}">Delete</a></td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No lessons yet. Add the first one so students have something to read.</p>
+  {% endif %}
+
+  <h2 class="section-title">Student questions</h2>
+  {% for q in questions %}
+    <div class="qa">
+      <p><strong>{{ q.student.username }}</strong> asked: {{ q.text }}</p>
+      {% if q.answer %}
+        <p class="qa__answer"><strong>Your answer:</strong> {{ q.answer }}</p>
+      {% endif %}
+      <form method="post" action="{% url 'courses:answer' q.pk %}" class="form form--inline">
+        {% csrf_token %}
+        <label for="answer-{{ q.pk }}" class="sr-only">Your answer</label>
+        <textarea id="answer-{{ q.pk }}" name="answer" rows="2" required>{{ q.answer }}</textarea>
+        <button type="submit" class="btn btn--small">{% if q.answer %}Update answer{% else %}Post answer{% endif %}</button>
+      </form>
+    </div>
+  {% empty %}
+    <p class="empty">No questions yet.</p>
+  {% endfor %}
+</section>
+{% endblock %}

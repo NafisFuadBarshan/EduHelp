@@ -1,0 +1,9 @@
+<article class="card">
+  <h3><a href="{{ course.get_absolute_url }}">{{ course.title }}</a></h3>
+  <p class="card__meta">Taught by {{ course.teacher.get_full_name|default:course.teacher.username }}</p>
+  <p>{{ course.description|truncatewords:22 }}</p>
+  <div class="card__foot">
+    <strong>{% if course.is_free %}Free{% else %}{{ CURRENCY }}{{ course.price }}{% endif %}</strong>
+    {% if course.id in enrolled_ids %}<span class="badge badge--ok">Enrolled</span>{% else %}<a class="btn btn--small" href="{{ course.get_absolute_url }}">View course</a>{% endif %}
+  </div>
+</article>
